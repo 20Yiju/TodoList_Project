@@ -46,13 +46,11 @@ public class TodoUtil {
 		
 		System.out.println("DELETE item You Want!!\n"
 				+ "Write the Number of item to DELETE > ");
-		int ind = sc.nextInt();
+		String ind = sc.next();
 		sc.nextLine();
 		System.out.println("Are you sure to erase the above items? (y/n)");
 		String yn = sc.next().trim();
-		//if(l.deleteItem(ind) > 0) {
-		//	System.out.println("DELETE successfully:D");
-		//}
+		
 		if(yn.equals("y")) {
 			if(l.deleteItem(ind) > 0) {
 				System.out.println("DELETE successfully:D");
@@ -168,17 +166,12 @@ public class TodoUtil {
 	
 	
 	public static void listCate(TodoList l) {
-		
 		Set<String> list =  new HashSet<>();
-		
 		for (TodoItem item : l.getList()) {
 			String ca = item.getcate();
 			list.add(ca);
-			
 		}
-		
 		int c = 0;
-		
 		for (String item : list) {
 			if(c == 0) {
 				System.out.print(item);
@@ -187,8 +180,7 @@ public class TodoUtil {
 			else {
 				System.out.print(" / " + item);
 				c++;
-			}
-			
+			}			
 		}
 		System.out.printf("\n %d items are exist!!\n", c);
 	}
@@ -211,6 +203,15 @@ public class TodoUtil {
 		System.out.printf("\n%d items are founded:D\n", c);	
 	}
 	
+	public static void findDueList(TodoList l, String due) {
+		int c = 0;
+		for (TodoItem item : l.getListDuedates(due)) {
+			System.out.println(item.getId() + item.toString());
+			c++;
+		}
+		System.out.printf("\n%d items are founded:D\n", c);	
+	}
+	
 	public static void listAll(TodoList l, String orderby, int ordering) {
 		System.out.printf("\n%d items are exist:D\n", l.getCount());
 		for (TodoItem item : l.getOrderedList(orderby, ordering)) {
@@ -218,7 +219,7 @@ public class TodoUtil {
 		}
 	}
 	
-	public static void completeItem(TodoList l, int id) {
+	public static void completeItem(TodoList l, String id) {
 		if(l.completeItem(id)) {
 			System.out.println("Change to \"complete\" successfully:D\n");
 		}
@@ -226,6 +227,7 @@ public class TodoUtil {
 			System.out.println("ID doesn't exist...");
 		}
 	}
+	
 	public static void completelist(TodoList l) {
 		int c = 0;
 		for (TodoItem item : l.completelist()) {
@@ -233,6 +235,21 @@ public class TodoUtil {
 			c++;
 		}
 		System.out.printf("\n%d items are founded:D\n", c);	
+		System.out.printf("A total of %d items are completed!!\n", c);	
+		System.out.print("GOOD JOB!!ꔷ̑◡ꔷ̑");
+		System.out.print("\n");
+	}
+	
+	public static void uncompletelist(TodoList l) {
+		int c = 0;
+		for (TodoItem item : l.uncompletelist()) {
+			System.out.println(item.getId() + item.toString());
+			c++;
+		}
+		System.out.printf("\n%d items are founded:D\n", c);	
+		System.out.printf("There are %d items to do!!\n", c);
+		System.out.print("Fighting!!ꔷ̑◡ꔷ̑");
+		System.out.print("\n");
 	}
 	
 	

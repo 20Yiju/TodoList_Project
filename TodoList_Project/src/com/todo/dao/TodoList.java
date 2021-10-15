@@ -16,27 +16,16 @@ import com.todo.service.TodoSortByName;
 public class TodoList {
 	private Connection conn;
 	
-	//private List<TodoItem> list;
-
 	public TodoList() {
 		this.conn = DbConnect.getConnection();
 	}
-
-	/*public void listAll() {
-		int c = 1;
-		System.out.println("All the items on the list~~~\n");
-		for (TodoItem myitem : list) {
-			System.out.println(c++ + ". [" + myitem.getcate() + "] "+ myitem.getTitle() + " - " + myitem.getDesc() + " - " + myitem.getdue() + "  -  " + myitem.getCurrent_date());
-		}
-	}*/
-	
-	
+		
 	public void importData(String filename) {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			String line;
-			String sql = "insert into list (title, memo, category, current_date, due_date)"
-					+ " values (?,?,?,?,?);";
+			String sql = "insert into list (title, memo, category, current_date, due_date, is_completed)"
+					+ " values (?,?,?,?,?,?);";
 			
 			int record = 0;
 			while((line = br.readLine()) != null) {
@@ -46,6 +35,8 @@ public class TodoList {
 				String description = st.nextToken();
 				String due_date = st.nextToken();
 				String current_date = st.nextToken();
+				String is_comp = st.nextToken();
+				int is_completed = Integer.parseInt(is_comp);
 				
 				
 				PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -54,7 +45,7 @@ public class TodoList {
 				pstmt.setString(3, category);
 				pstmt.setString(4, current_date);
 				pstmt.setString(5, due_date);
-				//pstmt.setInt(6, iscom);
+				pstmt.setInt(6, is_completed);
 				int count = pstmt.executeUpdate();
 				if(count > 0) {
 					record++;
@@ -159,15 +150,37 @@ public class TodoList {
 		return count;
 	}
 	
-	public int deleteItem(int index) {
+	public int deleteItem(String index) {
+		
 		String sql = "delete from list where id=?;";
 		PreparedStatement pstmt;
 		int count = 0;
+		int n = 0;
+		for(int j = 0; j < index.length(); j++) {
+			if(index.charAt(j) == ',') {
+				n += 1;
+			}
+		}
 		try {
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, index);
-			count = pstmt.executeUpdate();
-			pstmt.close();
+			if(index.contains(",")) {
+				String[] ind = index.split(",");
+				for(int i = 0; i < (n - 1); i++) {
+					int idx = Integer.parseInt(ind[i]);
+					pstmt = conn.prepareStatement(sql);
+					pstmt.setInt(1, idx);
+					count = pstmt.executeUpdate();
+					pstmt.close();
+				}
+			}
+			else {
+				int idx = Integer.parseInt(index);
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setInt(1, idx);
+				count = pstmt.executeUpdate();
+				pstmt.close();
+			}
+
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -222,6 +235,24 @@ public class TodoList {
 			changetolist_Itemtype(list, rs);
 			//String cate = rs.getString("category");
 			//list.add(cate);
+			pstmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+
+	}
+	
+	public ArrayList<TodoItem> getListDuedates(String keyword) {
+		ArrayList<TodoItem> list = new ArrayList<TodoItem>();
+		PreparedStatement pstmt;
+		try {
+			String sql = "SELECT * FROM list WHERE due_date = ?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, keyword);
+			ResultSet rs = pstmt.executeQuery();
+			changetolist_Itemtype(list, rs);
+
 			pstmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -292,14 +323,37 @@ public class TodoList {
 		return false;
 	}
 	
-	public boolean completeItem(int id) {
-		String sql = "update list set is_completed = 1 where id = " + id;
+	public boolean completeItem(String id) {
+		String sql = "";
 		Statement stmt;
 		int count = 0;
+		int idx = 0;
+		int n = 0;
+		for(int j = 0; j<id.length(); j++) {
+			if(id.charAt(j) == ',') {
+				n += 1;
+			}
+		}
 		try {
-			stmt = conn.createStatement();
-			count = stmt.executeUpdate(sql);
-			stmt.close();
+			if(id.contains(",")) {
+				String[] ind = id.split(",");
+				for(int i = 0; i < (n+1); i++) {
+					idx = Integer.parseInt(ind[i]);
+					sql = "update list set is_completed = 1 where id = " + idx;
+					stmt = conn.createStatement();
+					count = stmt.executeUpdate(sql);
+					stmt.close();
+				}
+			}
+			else {
+				idx = Integer.parseInt(id);
+				sql = "update list set is_completed = 1 where id = " + idx;
+				stmt = conn.createStatement();
+				count = stmt.executeUpdate(sql);
+				stmt.close();
+			}
+			
+
 			
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -310,12 +364,29 @@ public class TodoList {
 		return false;
 		
 	}
+	
 	public ArrayList<TodoItem> completelist() {
 		ArrayList<TodoItem> list = new ArrayList<TodoItem>();
 		Statement stmt;
 		try {
 			stmt = conn.createStatement();
 			String sql = "SELECT * FROM list WHERE is_completed = 1";
+			ResultSet rs = stmt.executeQuery(sql);
+			changetolist_Itemtype(list, rs);			
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+		
+	}
+	
+	public ArrayList<TodoItem> uncompletelist() {
+		ArrayList<TodoItem> list = new ArrayList<TodoItem>();
+		Statement stmt;
+		try {
+			stmt = conn.createStatement();
+			String sql = "SELECT * FROM list WHERE is_completed = 0";
 			ResultSet rs = stmt.executeQuery(sql);
 			changetolist_Itemtype(list, rs);			
 			stmt.close();

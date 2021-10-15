@@ -15,7 +15,7 @@ public class TodoMain {
 		l.importData("todolist.txt");
 		boolean isList = false;
 		boolean quit = false;
-		TodoUtil.loadList(l, "todolist.txt");
+		//TodoUtil.loadList(l, "todolist.txt");
 		Menu.displaymenu();
 		do {
 			Menu.prompt();
@@ -50,6 +50,12 @@ public class TodoMain {
 				String cate = sc.nextLine().trim();
 				TodoUtil.findCateList(l, cate);
 				break;
+
+			case "find_due":
+				System.out.println("Write the due_date to search > ");
+				String due_date = sc.nextLine().trim();
+				TodoUtil.findDueList(l, due_date);
+				break;
 				
 			case "ls_cate":
 				TodoUtil.listCate(l);
@@ -65,24 +71,38 @@ public class TodoMain {
 				TodoUtil.listAll(l, "title", 0);
 				break;
 				
-			case "ls_date":
+			case "ls_date_asc":
 				System.out.println("This list is arranged by date.");
-				TodoUtil.listAll(l, "title", 1);
+				TodoUtil.listAll(l, "current_date", 1);
 				break;
 				
 			case "ls_date_desc":
 				System.out.println("This list is arranged in reverse order of date.");
-				TodoUtil.listAll(l, "title", 0);
+				TodoUtil.listAll(l, "current_date", 0);
 				break;
+				
+			case "ls_due_asc":
+				System.out.println("This list is arranged by date.");
+				TodoUtil.listAll(l, "due_date", 1);
+				break;
+				
+			case "ls_due_desc":
+				System.out.println("This list is arranged in reverse order of date.");
+				TodoUtil.listAll(l, "due_date", 0);
+				break;
+				
 			case "comp":
 				System.out.println("Choose the id to change completed > ");
-				int id = sc.nextInt();
+				String id = sc.next();
 				TodoUtil.completeItem(l, id);
 				sc.nextLine();
 				break;
 			case "ls_comp":
 				TodoUtil.completelist(l);
+				break;
 				
+			case "ls_uncomp":
+				TodoUtil.uncompletelist(l);
 				break;
 	
 			case "help" :
