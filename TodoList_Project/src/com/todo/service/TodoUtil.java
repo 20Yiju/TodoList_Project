@@ -108,7 +108,7 @@ public class TodoUtil {
 		try {
 			FileWriter fw = new FileWriter(path);
 			for (TodoItem item : l.getList()) {
-				fw.write(item.getId() + item.toSaveString());
+				fw.write(item.toSaveString());
 			}
 			System.out.println("All data has been successfully saved!:D");
 			fw.close();
