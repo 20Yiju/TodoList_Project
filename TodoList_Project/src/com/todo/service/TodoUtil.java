@@ -124,7 +124,7 @@ public class TodoUtil {
 	
 	
 	public static void saveList(TodoList l, String filename) {
-		String path = "/Users/jeong-yiju/git/TodoListApp/" + filename;
+		String path = "/Users/jeong-yiju/git/TodoList_Projext/" + filename;
 		try {
 			FileWriter fw = new FileWriter(path);
 			for (TodoItem item : l.getList()) {
@@ -138,7 +138,7 @@ public class TodoUtil {
 		}
 	}
 	public static void loadList(TodoList l, String filename) {
-		String path = "/Users/jeong-yiju/git/TodoListApp/" + filename;
+		String path = "/Users/jeong-yiju/git/TodoList_Projext/" + filename;
 		
 		try {
 			File f = new File(path);
