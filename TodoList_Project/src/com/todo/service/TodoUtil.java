@@ -9,7 +9,7 @@ public class TodoUtil {
 	
 	public static void createItem(TodoList list) {
 		
-		String title, desc, date, cate, due_date;
+		String title, desc, date, cate, due_date, etc, imp;
 		Scanner sc = new Scanner(System.in);
 		
 		System.out.println("ADD item You want!!\n"
@@ -17,12 +17,12 @@ public class TodoUtil {
 		title = sc.next();
 		
 		if(list.isDuplicate(title)) {
-			System.out.println("Title can not be duplicate!!");
+			System.out.println("TITLE can not be duplicate!!");
 			return;
 		}
 		
 		sc.nextLine();
-		System.out.println("Write the category of item to ADD > ");
+		System.out.println("Write the CATEGORY of item to ADD > ");
 		
 		cate = sc.next();
 		sc.nextLine();
@@ -30,11 +30,21 @@ public class TodoUtil {
 		due_date = sc.next().trim();
 		
 		sc.nextLine();
-		System.out.println("Write the description of title you wirte > ");
+		System.out.println("Write the DESCRIPTION of title you wirte > ");
 		desc = sc.nextLine().trim();
 		
+		sc.nextLine();
+		System.out.println("Write the IMPORTANCE of title you wirte(1~5) > ");
+		imp = sc.nextLine().trim();
 		
-		TodoItem t = new TodoItem(title, desc, cate, due_date);
+		sc.nextLine();
+		System.out.println("Write the ETC. of title you wirte > ");
+		etc = sc.nextLine().trim();
+		
+
+		
+		
+		TodoItem t = new TodoItem(title, desc, cate, due_date, imp, etc);
 		if(list.addItem(t) > 0) {
 			System.out.println("ADD successfully:D");
 		}
@@ -61,7 +71,7 @@ public class TodoUtil {
 
 
 	public static void updateItem(TodoList l) {
-		String new_title, new_desc, new_date, new_cate, new_due_date;
+		String new_title, new_desc, new_date, new_cate, new_due, new_imp, new_etc;
 		Scanner sc = new Scanner(System.in);
 		
 		System.out.println("EDIT item You Want!!\n"
@@ -78,14 +88,24 @@ public class TodoUtil {
 		sc.nextLine();
 		
 		System.out.println("Write the new description > ");
-		String new_description = sc.nextLine().trim();
+		new_desc = sc.nextLine().trim();
 		
 		sc.nextLine();
 		System.out.println("Write the NEW due date of the item > ");
-		String new_due = sc.next().trim();
+		new_due = sc.next().trim();
+		
+		sc.nextLine();
+		System.out.println("Write the NEW importance of title you wirte(1~5) > ");
+		new_imp = sc.nextLine().trim();
+		
+		sc.nextLine();
+		System.out.println("Write the NEW etc. of title you wirte > ");
+		new_etc = sc.nextLine().trim();
+		
+
 		
 		
-		TodoItem t = new TodoItem(new_title, new_description, new_cate, new_due);
+		TodoItem t = new TodoItem(new_title, new_desc, new_cate, new_due, new_imp, new_etc);
 		t.setId(ind);
 		if(l.updateItem(t) > 0) {
 			System.out.println("item updated successfuly:D");

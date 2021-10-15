@@ -24,16 +24,18 @@ public class TodoList {
 		try {
 			BufferedReader br = new BufferedReader(new FileReader(filename));
 			String line;
-			String sql = "insert into list (title, memo, category, current_date, due_date, is_completed)"
-					+ " values (?,?,?,?,?,?);";
+			String sql = "insert into list (title, memo, category, current_date, due_date, is_completed, imp, etc)"
+					+ " values (?,?,?,?,?,?,?,?);";
 			
 			int record = 0;
 			while((line = br.readLine()) != null) {
 				StringTokenizer st = new StringTokenizer(line, "##");
 				String category = st.nextToken();
+				String imp = st.nextToken();
 				String title = st.nextToken();
 				String description = st.nextToken();
 				String due_date = st.nextToken();
+				String etc = st.nextToken();
 				String current_date = st.nextToken();
 				String is_comp = st.nextToken();
 				int is_completed = Integer.parseInt(is_comp);
@@ -46,6 +48,8 @@ public class TodoList {
 				pstmt.setString(4, current_date);
 				pstmt.setString(5, due_date);
 				pstmt.setInt(6, is_completed);
+				pstmt.setString(7, imp);
+				pstmt.setString(8, etc);
 				int count = pstmt.executeUpdate();
 				if(count > 0) {
 					record++;
@@ -61,8 +65,8 @@ public class TodoList {
 	}
 	
 	public int addItem(TodoItem t) {
-		String sql = "insert into list (title, memo, category, current_date, due_date, is_completed)"
-				+ " values (?,?,?,?,?,?);";
+		String sql = "insert into list (title, memo, category, current_date, due_date, is_completed, imp, etc)"
+				+ " values (?,?,?,?,?,?,?,?);";
 		PreparedStatement pstmt;
 		int count = 0;
 		try {
@@ -73,6 +77,8 @@ public class TodoList {
 			pstmt.setString(4, t.getCurrent_date());
 			pstmt.setString(5, t.getdue());
 			pstmt.setInt(6, t.getiscom());
+			pstmt.setString(7, t.getImp());
+			pstmt.setString(8, t.getEtc());
 			count = pstmt.executeUpdate();
 			pstmt.close();
 		} catch (SQLException e) {
@@ -95,7 +101,10 @@ public class TodoList {
 				String description = rs.getString("memo");
 				String due_date = rs.getString("due_date");
 				String current_date = rs.getString("current_date");
-				TodoItem t = new TodoItem(title, description, category, due_date);
+				String imp = rs.getString("imp");
+				String etc = rs.getString("etc");
+
+				TodoItem t = new TodoItem(title, description, category, due_date, imp, etc);
 				t.setId(id);
 				if(rs.getInt("is_completed") == 1) {
 					t.setiscom(1);
@@ -131,7 +140,7 @@ public class TodoList {
 		
 	}
 	public int updateItem(TodoItem t) {
-		String sql = "update list set title=?, memo=?, category=?, current_date=?, due_date=?"
+		String sql = "update list set title=?, memo=?, category=?, current_date=?, due_date=?, imp=?, etc=?"
 				+ " where id = ?;";
 		PreparedStatement pstmt;
 		int count = 0;
@@ -142,7 +151,9 @@ public class TodoList {
 			pstmt.setString(3, t.getcate());
 			pstmt.setString(4, t.getCurrent_date());
 			pstmt.setString(5, t.getdue());
-			pstmt.setInt(6, t.getId());
+			pstmt.setString(6, t.getImp());
+			pstmt.setString(7, t.getEtc());
+			pstmt.setInt(8, t.getId());
 			count = pstmt.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -156,6 +167,7 @@ public class TodoList {
 		PreparedStatement pstmt;
 		int count = 0;
 		int n = 0;
+		int idx =0;
 		for(int j = 0; j < index.length(); j++) {
 			if(index.charAt(j) == ',') {
 				n += 1;
@@ -164,8 +176,9 @@ public class TodoList {
 		try {
 			if(index.contains(",")) {
 				String[] ind = index.split(",");
-				for(int i = 0; i < (n - 1); i++) {
-					int idx = Integer.parseInt(ind[i]);
+				
+				for(int i = 0; i < (n+1); i++) {
+					idx = Integer.parseInt(ind[i]);
 					pstmt = conn.prepareStatement(sql);
 					pstmt.setInt(1, idx);
 					count = pstmt.executeUpdate();
@@ -173,7 +186,7 @@ public class TodoList {
 				}
 			}
 			else {
-				int idx = Integer.parseInt(index);
+				idx = Integer.parseInt(index);
 				pstmt = conn.prepareStatement(sql);
 				pstmt.setInt(1, idx);
 				count = pstmt.executeUpdate();
@@ -288,7 +301,9 @@ public class TodoList {
 					rs.getString("category"), 
 					rs.getString("memo"), 
 					rs.getString("current_date"),
-					rs.getString("due_date")
+					rs.getString("due_date"),
+					rs.getString("imp"),
+					rs.getString("etc")
 			);
 			int ind = rs.getInt("id");
 			item.setId(ind);
